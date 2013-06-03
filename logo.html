@@ -1,0 +1,242 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="logo.css">
+	<link rel="stylesheet" type="text/css" href="">
+	<script type="text/javascript" src="q.js"></script>
+	<script type="text/javascript" src="logo.js"></script>
+	<script type="text/javascript" src="logoparser.js"></script>
+	<script type="text/javascript" src="logocompiler.js"></script>
+	<title>Logo</title>
+</head>
+<body>
+	<div id="contentwrapper" style="width:1400;">
+		<div id="logowindow" style="float:left;">
+			<div id="stage" style="width:610;">
+				<canvas id="sceneImage" width="600" height="400"></canvas>
+				<canvas id="sceneTurtle" width="600" height="400"></canvas>
+				<div style="clear: both;"></div>
+			</div>
+			
+			<div style="width:610;">
+				<span id="errorArea"></span>
+				<br>
+				<input type="button" onclick="btnRunClick();" id="btnRun" value="Run" />
+				<input type="button" onclick="btnStopClick();" id="btnStop" value="Stop" />
+				<input type="button" onclick="btnTokenizeClick();" id="btnTokenize" value="Tokenize" />
+				<input type="button" onclick="btnParseClick();" id="btnParse" value="Parse" />
+				<input type="button" onclick="btnCompileAsmClick();" id="btnCompileAsm" value="Compile Asm" />
+				<input type="button" onclick="btnCompileLogoClick();" id="btnCompileLogo" value="Compile Logo" />
+				<br>
+				<textarea id="program" style="float:left;" cols="80" rows="10"></textarea>
+				
+			</div>
+		</div>
+		<div id="sidebox" style="float:left;width:700;">
+			<div id="tabheader">
+				<ul id="tabul">
+					<li id="procstab" class="atab" ><a href="#" onclick="switchtab('procstab');">Procs</a></li>
+					<li id="examplestab" class="atab"><a href="#" onclick="switchtab('examplestab');">Examples</a></li>
+					<li id="abouttab" class="selected"><a href="#" onclick="switchtab('abouttab');">About</a></li>
+				</ul>
+			</div>
+			<div id="tabcontent">
+				<div id="aboutcontent" class="activetabcontent">
+					<h2>JSLogo, a simple logo interpreter</h2>
+					<h3>How to use</h3>
+	<p>Type Logo commands in the console at the bottom-right and press 'Run'.</p>
+	<p>To define procedures switch to the 'Procs' tab and write them so that you can call them in the console.</p>
+	<p>You can also define a procedure in the console, this can be useful when copying code from the 'Examples' tab and pasting it into the console to test it.</p>
+
+	Currently supported Logo commands are:<br><br>
+
+	<table border="1" cellspacing="0" cellpadding="0">
+	<tr><td><b>forward</b> <i>steps</i><br><b>fd</b> <i>steps</i></td><td>Moves the turtle forwards by a given number of steps</td></tr>
+	<tr><td><b>back</b> <i>steps</i><br><b>bk</b> <i>steps</i></td><td>Moves the turtle backwards by a given number of steps</td></tr>
+	<tr><td><b>left</b> <i>degrees</i><br><b>lt</b> <i>degrees</i></td><td>Rotates the turtle to the left by a given number of degrees</td></tr>
+	<tr><td><b>right</b> <i>degrees</i><br><b>rt</b> <i>degrees</i></td><td>Rotates the turtle to the right by a given number of degrees</td></tr>
+	<tr><td><b>clearscreen</b><br><b>cs</b></td><td>Erases all drawing from the screen</td></tr>
+	<tr><td><b>home</b></td><td>Positions the turtle in the center of the screen, pointing upwards</td></tr>
+	<tr><td><b>repeat</b> <i>number</i> <i>commands</i></td><td>Takes a number and a list of commands between [ ] and executes the commands repeatedly as specified by the number. For example to draw a square: <i>repeat 4 [fd 50 rt 90]</i></td></tr>
+	</table>
+	<br> The traditional arithmetic operations + - * / are supported (remember to have spaces around them).
+				</div>
+				<div id="procscontent" class="tabcontent">
+					<textarea id="procsDefs" cols="80" rows="36">
+/* to sampleProc :arg1 :arg2
+&nbsp;&nbsp;forward :arg1
+&nbsp;&nbsp;right :arg2
+end */
+					</textarea>
+				</div>
+				<div id="examplescontent" class="tabcontent">
+<code>repeat 4 [fd 50 rt 90]</code>
+<hr>
+<code>repeat 8 [repeat 4 [fd 50 rt 90] rt 45]</code>
+<hr>
+<code><pre>
+to swirly :a :b :c
+fd :a
+rt :b
+swirly :a :b + :c :c
+end
+swirly 12 8 9
+</pre></code>
+<hr>
+<code><pre>
+to circle
+repeat 180 [fd 2 rt 2]
+end
+
+to circles
+repeat 6 [circle rt 60]
+end				
+
+to halfcircle
+repeat 180 [fd 2 rt 1]
+end
+
+to halfcirclepattern
+repeat 3 [halfcircle rt 60]
+end				
+
+cs
+home
+circles
+cs
+home
+halfcirclepattern
+</pre>
+</code>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	var scene;
+	window.onload = function(){
+	window.requestAnimationFrame = (function() {
+        return (window.requestAnimationFrame       || 
+            window.webkitRequestAnimationFrame || 
+            window.mozRequestAnimationFrame    || 
+            window.oRequestAnimationFrame      || 
+            window.msRequestAnimationFrame     || 
+            function(/* function */ callback){
+                window.setTimeout(callback, 1000 / 60);
+            });
+    } ) ();
+		//console.log(defaultVm);
+		var turtleCanvas = document.getElementById('sceneTurtle');
+		var turtleCtx = turtleCanvas.getContext('2d');
+
+		var imgCanvas = document.getElementById('sceneImage');
+		var imgCtx = imgCanvas.getContext('2d');
+		scene = new Scene(turtleCanvas, turtleCtx, imgCanvas, imgCtx);
+		var compileSuccessful = false;
+		
+		initPrimitives(scene);
+		//scene.draw();
+	};
+	 
+		function btnRunClick () {
+			var errArea = document.getElementById("errorArea");
+			errArea.innerHTML = "";
+			compileSuccessful = false;
+			btnCompileLogoClick();
+			if(compileSuccessful)
+				runMain(scene);
+		}
+		function btnStopClick () {
+			stopDefaultVm(scene);
+		}
+
+		function btnCompileAsmClick () {
+			var code = document.getElementById("program").value;
+			var ast = eval(code);
+			ast = ['def', 'main', []].concat([ast]);
+			initPrimitives(scene);
+			var method = new Method(compileCode(ast, defaultVm));
+			console.log(method.instructions);
+		}
+
+		function getCode() {
+			var fromProcs = document.getElementById("procsDefs").value;
+			var fromConsole = document.getElementById("program").value;
+			return fromProcs + "\n"+ fromConsole;
+		}
+		function btnTokenizeClick () {
+			var code = getCode();
+			var tokens = tokenize(code);
+			console.log("tokens = " + tokens.join("\n"));
+		}
+
+		function btnParseClick () {
+			var code =  getCode();
+			var tokens = tokenize(code);
+			var buffer = new TokenBuffer(tokens);
+			var ast = parse(buffer);
+			console.log("ast = " + ast.toSource());
+		}
+
+		function btnCompileLogoClick () {
+
+			var code = getCode();
+			var tokens = tokenize(code);
+			var buffer = new TokenBuffer(tokens);
+			var ast = parse(buffer);
+			var errArea = document.getElementById("errorArea");
+			//console.log("ast = " + ast.toSource());
+			var arrangedAst;
+			if(ast[0] != "ok")
+			{
+				console.log(ast[0])
+				errArea.innerHTML = ast[0];
+			}
+			else
+			{
+				arrangedAst = compileLogo(ast[1], ast[2], defaultVm.arities);
+				if(arrangedAst[0] != "ok")
+				{
+					//console.log("Problem: " + arrangedAst[0]);
+					errArea.innerHTML = arrangedAst[0];
+				}
+				else
+				{
+					var defs = arrangedAst[2];
+					//console.log("Found list of definitions: " + defs.toSource());
+					for (var mname in defs) {
+						if(!defs.hasOwnProperty(mname))
+							continue;
+						var def = defs[mname];
+						//console.log("Adding definition to VM: " + def.toSource());
+						var asm = compileCode(def, defaultVm);
+					};
+					
+					var mainAsm = arrangedAst[1];
+					//console.log("This is main's asm code: " + mainAsm.toSource());
+					var mainInstructions = compileCode(mainAsm, defaultVm);
+					//console.log("'Main' instructions: " + mainInstructions.toSource());
+ 					compileSuccessful = true;
+				}
+			}
+		}
+
+		function switchtab (tabId) {
+
+			var sel = document.getElementsByClassName("selected")[0];
+			
+			var newSel = document.getElementById(tabId);
+			var s = sel.id.replace('tab', 'content');
+			var selContent = document.getElementById(s);
+			selContent.className = 'tabcontent';
+			sel.className = 'atab';
+			newSel.className = 'selected';
+			var s2 = tabId.replace('tab', 'content');
+			var newSelContent = document.getElementById(s2);
+			newSelContent.className = 'activetabcontent';
+
+		}
+	</script>
+	
+</body>
+</html>
