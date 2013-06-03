@@ -1,4 +1,4 @@
- #errorArea {
+#errorArea {
 	color:red;
 }
 
@@ -69,17 +69,10 @@ hr {
 	border-bottom: 1px solid white;
 	padding-bottom: 1px; 
 	background: white;
-	padding-bottom: 1px; 
-	background: white;
-
-
 }
 
 #tabheader .atab {
 	padding-bottom: 0px; 
-	padding-bottom: 1px; 
-	background: white;
-
 }
 
 
