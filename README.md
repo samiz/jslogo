@@ -1,12 +1,16 @@
 JSLogo is an experiment in writing a browser-based language interpreter.
 
-= What works =
+Demo here: http://samiz.github.io/jslogo/logo.html
+
+*What works*
+
 * Arithmetic
 * Turtle graphics
 * Procedures and procedure calls
 * Tail-call elimination
 
-= What's not yet implemented =
+*What's not yet implemented*
+
 * Lists and list operartions
 * Assigning to variables (setting parameters works fine though)
 * Quoting "word
@@ -17,9 +21,9 @@ JSLogo is an experiment in writing a browser-based language interpreter.
 * Better error reporting
 * While performance is more or less acceptable, it can be optimized further
 
-= A note about lists =
+*A note about lists*
 
-The traditional Logo list syntax [...] actually serves now as lambdas. Typical Logo implementations represent data lists by brackets and simulates lambdas by letting the user write them lists of commands. This works well since Logo typically uses dynamic scope, but I'm trying to implement Lexical scope in JSLogo so now I have a problem.
+The traditional Logo list syntax [a, b, c] serves now as lambdas. Typical Logo implementations represent data lists by brackets and simulates lambdas by letting the user write them as lists of commands. This works well since Logo typically uses dynamic scope, but I'm trying to implement Lexical scope in JSLogo so now I have a problem.
 
 Possible solutions:
 * Just use dynamic scope
