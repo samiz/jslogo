@@ -16,7 +16,8 @@ Demo here: http://samiz.github.io/jslogo/logo.html
 * Quoting "word
 * Only a few of the Logo built-ins exist currently
 
-= What needs to be improved =
+*What needs to be improved*
+
 * Some parts of the parser
 * Better error reporting
 * While performance is more or less acceptable, it can be optimized further
