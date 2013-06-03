@@ -1,0 +1,95 @@
+#errorArea {
+	color:red;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  color: #333;
+  background-color: #333;
+}
+
+#stage {
+	position: relative;
+	width: 610;
+	height: 410;
+}
+
+#stage canvas {
+	border: solid 1px;
+	position: absolute;
+	display: inline;
+	left: 0;
+	top: 0;
+}
+
+#sceneImage {
+	z-index: 1;
+}
+
+#sceneTurtle {
+	z-index: 0;
+}
+
+#program {
+	padding: 0;
+	width: 600px;
+}
+
+#tabcontent {
+	border: 1px solid;
+}
+
+#tabheader ul {
+	list-style: none;
+	padding:0;
+	margin:0;
+}
+
+
+#tabheader li {
+	display: inline;
+	border: solid;
+	border-width: 1px 1px 0px 1px;
+	margin: 0 0.5em 0 0;
+
+}
+
+
+#tabheader li a {
+	padding: 0 1em;
+}
+
+#tabheader a {
+ text-decoration: none;
+ outline: 0;	
+}
+
+#tabheader .selected {
+	border-bottom: 1px solid white;
+	padding-bottom: 1px; 
+	background: white;
+	padding-bottom: 1px; 
+	background: white;
+
+
+}
+
+#tabheader .atab {
+	padding-bottom: 0px; 
+	padding-bottom: 1px; 
+	background: white;
+
+}
+
+
+
+#tabcontent .activetabcontent {
+	display: block;
+	margin: 5px 5px 5px 5px;
+}
+
+#tabcontent .tabcontent {
+	display: none;
+	margin: 5px 5px 5px 5px;
+}
